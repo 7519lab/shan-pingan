@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>山平安｜儀表板</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔭</text></svg>">
+<style>
+  :root{
+    --bg:#EFF3F1; --card:#FFFFFF; --ink:#22312E; --muted:#68776F;
+    --line:#DCE4E0; --brand:#2E6E63; --brand-soft:#E2EEEA;
+    --ok:#2F8F5B; --ok-soft:#E3F2E9; --warn:#B4751C; --warn-soft:#F7ECD9;
+    --alert:#B9442F; --alert-soft:#F8E6E1; --chip:#EAEFEC;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0F1614; --card:#19231F; --ink:#E7EFEA; --muted:#92A29A;
+      --line:#2A3630; --brand:#5FB3A1; --brand-soft:#1E312C;
+      --ok:#6FC392; --ok-soft:#1C2F24; --warn:#DBA34E; --warn-soft:#332A18;
+      --alert:#E07B64; --alert-soft:#36201B; --chip:#232E29;
+    }
+  }
+  *{box-sizing:border-box;}
+  html{height:100%;}
+  body{
+    margin:0; min-height:100%; background:var(--bg); color:var(--ink);
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;
+    font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:560px; margin:0 auto; padding:20px 18px 48px;}
+  header.site{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:14px;}
+  .wordmark{font-family:"Songti TC","Noto Serif TC",serif; font-weight:900; font-size:30px; letter-spacing:.06em; margin:0;}
+  .wordmark small{display:block; font-weight:700; font-size:13px; color:var(--muted); letter-spacing:.12em; margin-top:2px;}
+  .conn{font-size:12px; color:var(--muted); padding:4px 10px; border:1px solid var(--line); border-radius:999px; white-space:nowrap;}
+  .conn.on{color:var(--ok); border-color:var(--ok);}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:16px; margin:12px 0;}
+  .today{display:flex; gap:12px; align-items:flex-start;}
+  .daynum{font-family:"Songti TC",serif; font-weight:900; font-size:34px; line-height:1; color:var(--brand); min-width:64px;}
+  .daynum em{display:block; font-style:normal; font-size:12px; font-weight:700; color:var(--muted); letter-spacing:.08em; margin-bottom:2px;}
+  .today h2{margin:0 0 2px; font-size:17px;}
+  .today p{margin:0; color:var(--muted); font-size:14px;}
+  .sig{display:inline-flex; gap:6px; font-size:13px; font-weight:600; border-radius:999px; padding:3px 10px; margin-top:8px;}
+  .sig.g{background:var(--ok-soft); color:var(--ok);}
+  .sig.y{background:var(--warn-soft); color:var(--warn);}
+  .sig.r{background:var(--alert-soft); color:var(--alert);}
+  .verdict{border-radius:18px; padding:18px 16px; margin:12px 0; border:1px solid;}
+  .verdict.calm{background:var(--brand-soft); border-color:var(--brand);}
+  .verdict.ok{background:var(--ok-soft); border-color:var(--ok);}
+  .verdict.warn{background:var(--warn-soft); border-color:var(--warn);}
+  .verdict.alert{background:var(--alert-soft); border-color:var(--alert);}
+  .verdict h2{margin:0 0 6px; font-size:19px;}
+  .verdict p{margin:4px 0 0; font-size:14px;}
+  .verdict ol{margin:8px 0 0; padding-left:20px; font-size:14px;}
+  .verdict a{color:inherit; font-weight:700;}
+  .feed h3{font-size:15px; font-weight:700; margin:4px 0 2px;}
+  .entry{display:flex; gap:10px; padding:11px 0; border-top:1px solid var(--line); align-items:flex-start;}
+  .entry:first-of-type{border-top:none;}
+  .who{background:var(--chip); border-radius:999px; font-size:13px; font-weight:700; padding:3px 10px; white-space:nowrap;}
+  .entry .t{font-size:14px;}
+  .entry .t .sub{color:var(--muted); font-size:13px;}
+  .entry .t .note{margin-top:2px;}
+  .entry a{color:var(--brand); font-size:13px; font-weight:600; text-decoration:none;}
+  .empty{color:var(--muted); font-size:14px; padding:8px 0 2px;}
+  .itin{margin:12px 0; padding:0;}
+  .itin summary{cursor:pointer; padding:14px 16px; font-size:15px; font-weight:700;}
+  .itrow{display:grid; grid-template-columns:58px 1fr auto; gap:8px; padding:8px 16px; border-top:1px solid var(--line); font-size:13.5px; align-items:baseline;}
+  .itrow .d{font-weight:700; white-space:nowrap;}
+  .itrow .p span{color:var(--muted); display:block; font-size:12.5px;}
+  .itrow.now{background:var(--brand-soft);}
+  .banner{background:var(--alert-soft); color:var(--alert); border:1px solid var(--alert);
+    border-radius:14px; padding:12px 14px; font-size:14px; margin:12px 0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="site">
+    <h1 class="wordmark">山平安<small>儀表板・只給絲絲看</small></h1>
+    <span class="conn" id="conn">連線中…</span>
+  </header>
+  <main id="app"></main>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { firebaseConfig } from "./config.js";
+
+const TRIP=[
+ {d:"2026-10-17",wd:"六",place:"抵達成都",stay:"機場旁酒店",alt:500, sig:"g",note:"落地＋到飯店各報一次"},
+ {d:"2026-10-18",wd:"日",place:"成都 → 上里古鎮 → 瀘定",stay:"瀘定",alt:1300,sig:"g",note:""},
+ {d:"2026-10-19",wd:"一",place:"瀘定 → 新都橋 → 雅江",stay:"雅江・含氧房",alt:3300,sig:"y",note:"單日爬升 2000m，高山症好發日"},
+ {d:"2026-10-20",wd:"二",place:"進格聶神山景區",stay:"景區內・含氧房",alt:3800,sig:"r",note:"偏遠山區，斷訊正常"},
+ {d:"2026-10-21",wd:"三",place:"格聶全天拍攝",stay:"景區內・含氧房",alt:3800,sig:"r",note:"持續斷訊別慌"},
+ {d:"2026-10-22",wd:"四",place:"出山 → 香格里拉鎮",stay:"香格里拉鎮",alt:2900,sig:"g",note:"今晚應恢復聯絡"},
+ {d:"2026-10-23",wd:"五",place:"進亞丁景區",stay:"亞丁村",alt:3900,sig:"y",note:"村裡有訊號"},
+ {d:"2026-10-24",wd:"六",place:"亞丁景區徒步攝影",stay:"亞丁村",alt:3900,sig:"y",note:"白天山裡沒訊號，晚上會回"},
+ {d:"2026-10-25",wd:"日",place:"牛奶海、五色海徒步",stay:"亞丁村",alt:4600,sig:"y",note:"全程最硬的一天"},
+ {d:"2026-10-26",wd:"一",place:"下撤 → 新都橋",stay:"新都橋",alt:2560,sig:"g",note:"安心日"},
+ {d:"2026-10-27",wd:"二",place:"子梅埡口看貢嘎日落",stay:"上木居・含氧房",alt:3600,sig:"r",note:"偏遠山村"},
+ {d:"2026-10-28",wd:"三",place:"冷噶措 → 瀘定",stay:"瀘定",alt:1330,sig:"g",note:""},
+ {d:"2026-10-29",wd:"四",place:"牛背山山頂帳篷夜",stay:"山頂帳篷營地",alt:3666,sig:"r",note:"山頂訊號看天吃飯"},
+ {d:"2026-10-30",wd:"五",place:"牛背山日出 → 海螺溝",stay:"景區三號營地",alt:2900,sig:"y",note:"泡溫泉日"},
+ {d:"2026-10-31",wd:"六",place:"海螺溝 → 回成都",stay:"成都酒店",alt:500, sig:"g",note:"平安下山"},
+ {d:"2026-11-01",wd:"日",place:"自由活動，下午送機",stay:"CX987 14:30 起飛",alt:500,sig:"g",note:"回家！"}
+];
+const SIG_LABEL={g:"🟢 訊號正常日",y:"🟡 可能延遲日",r:"🔴 預期斷訊日"};
+const SIG_HOURS={g:24,y:36,r:null};
+const SEF_TEL="+886-2-2533-9995";
+
+const $=s=>document.querySelector(s);
+const app=$("#app"), connEl=$("#conn");
+function chinaToday(){ try{return new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Shanghai"}).format(new Date());}
+  catch(e){return new Date().toISOString().slice(0,10);} }
+function tripInfo(){
+  const t=chinaToday();
+  if(t<TRIP[0].d){ const days=Math.round((Date.parse(TRIP[0].d)-Date.parse(t))/864e5); return {phase:"before",days}; }
+  const idx=TRIP.findIndex(x=>x.d===t);
+  if(idx===-1) return {phase:"after"};
+  return {phase:"on",idx,day:TRIP[idx]};
+}
+function nextGreenAfter(idx){ for(let i=idx+1;i<TRIP.length;i++){ if(TRIP[i].sig==="g") return TRIP[i]; } return null; }
+function fmtTime(ms){ try{return new Intl.DateTimeFormat("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date(ms));}catch(e){return new Date(ms).toLocaleString();} }
+function rel(ms){ const h=(Date.now()-ms)/36e5;
+  if(h<1) return Math.max(1,Math.round(h*60))+" 分鐘前";
+  if(h<48) return Math.round(h)+" 小時前";
+  return Math.round(h/24)+" 天前"; }
+function el(t,c,x){ const n=document.createElement(t); if(c)n.className=c; if(x!=null)n.textContent=x; return n; }
+
+let db=null, latest=[];
+const configured=firebaseConfig && firebaseConfig.apiKey && !String(firebaseConfig.apiKey).includes("貼上");
+if(configured){ try{ db=getFirestore(initializeApp(firebaseConfig)); }catch(e){ db=null; } }
+
+function todayCard(info){
+  const c=el("div","card");
+  if(info.phase==="before"){ c.append(el("h2",null,"行程還沒開始"),el("p",null,"10/17 出發，倒數 "+info.days+" 天。")); return c; }
+  if(info.phase==="after"){ c.append(el("h2",null,"行程已結束 🎉")); return c; }
+  const d=info.day, row=el("div","today");
+  const num=el("div","daynum"); num.append(el("em",null,"DAY"),document.createTextNode(String(info.idx+1)));
+  const t=el("div");
+  t.append(el("h2",null,d.place));
+  t.append(el("p",null,d.d.slice(5).replace("-","/")+"（"+d.wd+"）・宿 "+d.stay+"・海拔 "+d.alt+"m"));
+  t.append(el("span","sig "+d.sig,SIG_LABEL[d.sig]+(d.note?("・"+d.note):"")));
+  row.append(num,t); c.append(row); return c;
+}
+function verdictCard(info){
+  const v=el("div","verdict");
+  const last=latest[0]||null;
+  if(info.phase==="before"){ v.classList.add("calm");
+    v.append(el("h2",null,"⛺ 行前準備期"),el("p",null,"還沒出發，不用盯。待辦：動態登錄系統、台灣漫遊、「尋找」共享位置。")); return v; }
+  if(info.phase==="after"){ v.classList.add("ok"); v.append(el("h2",null,"🎉 行程結束，安心收工")); return v; }
+  const d=info.day, th=SIG_HOURS[d.sig];
+  const hrs=last?Math.floor((Date.now()-last.at)/36e5):null;
+  if(d.sig==="r"){
+    v.classList.add("calm");
+    v.append(el("h2",null,"🏔️ 今天是預期斷訊日"));
+    v.append(el("p",null,"沒消息＝正常，不用腦補。"+(last?("最後回報是 "+rel(last.at)+"。"):"")));
+    const ng=nextGreenAfter(info.idx);
+    if(ng) v.append(el("p",null,"預計 "+ng.d.slice(5).replace("-","/")+"（"+ng.wd+"）到「"+ng.stay+"」會恢復聯絡。"));
+    return v;
+  }
+  if(!last){ v.classList.add("warn");
+    v.append(el("h2",null,"還沒有任何回報"),el("p",null,"先確認爸媽有打開他們那頁、按過一次按鈕。")); return v; }
+  if(hrs<=th){
+    v.classList.add("ok");
+    v.append(el("h2",null,"✅ 一切正常"));
+    v.append(el("p",null,"最後回報："+String(last.who||"？")+"，"+fmtTime(last.at)+"（"+rel(last.at)+"）。"+SIG_LABEL[d.sig]+"，"+th+" 小時內有消息就安心。"));
+    return v;
+  }
+  v.classList.add("alert");
+  v.append(el("h2",null,"⚠️ 超過 "+hrs+" 小時沒回報"));
+  v.append(el("p",null,"今天不是斷訊日，照升級規則走："));
+  const olst=el("ol");
+  olst.append(el("li",null,"Line／微信直接打給爸媽"));
+  olst.append(el("li",null,"聯絡領隊（Linda／旅行社）"));
+  const li3=el("li",null,"都不行 → 海基會 24 小時緊急專線 ");
+  const a=el("a",null,SEF_TEL); a.href="tel:"+SEF_TEL; li3.append(a); olst.append(li3);
+  v.append(olst);
+  return v;
+}
+function render(){
+  const info=tripInfo();
+  const frag=document.createDocumentFragment();
+  if(!configured) frag.append(el("div","banner","⚠️ 還沒設定 config.js——請照 SETUP.md 步驟 2 貼上 Firebase 設定。"));
+  frag.append(verdictCard(info));
+  frag.append(todayCard(info));
+  const feed=el("div","card feed");
+  feed.append(el("h3",null,"回報紀錄"));
+  if(!latest.length) feed.append(el("p","empty","目前還是空的。"));
+  latest.slice(0,25).forEach(x=>{
+    if(!x) return;
+    const row=el("div","entry");
+    row.append(el("span","who",String(x.who||"？")));
+    const t=el("div","t");
+    const line=el("div"); line.append(el("b",null,fmtTime(x.at)));
+    line.append(el("span","sub","（"+rel(x.at)+"）"));
+    t.append(line);
+    if(x.note) t.append(el("div","note",String(x.note)));
+    if(typeof x.lat==="number"&&typeof x.lng==="number"){
+      const a=el("a",null,"查看地圖位置");
+      a.href="https://www.google.com/maps?q="+x.lat+","+x.lng; a.target="_blank"; a.rel="noopener";
+      t.append(a);
+    }
+    row.append(t); feed.append(row);
+  });
+  frag.append(feed);
+  const itin=el("details","itin card");
+  itin.append(el("summary",null,"16 天完整行蹤表"));
+  TRIP.forEach((x,i)=>{
+    const r=el("div","itrow"+(info.phase==="on"&&i===info.idx?" now":""));
+    r.append(el("span","d",x.d.slice(5).replace("-","/")+"（"+x.wd+"）"));
+    const p=el("span","p",x.place);
+    p.append(el("span",null,"宿 "+x.stay+"・"+x.alt+"m"+(x.note?("・"+x.note):"")));
+    r.append(p);
+    r.append(el("span",null,{g:"🟢",y:"🟡",r:"🔴"}[x.sig]));
+    itin.append(r);
+  });
+  frag.append(itin);
+  app.replaceChildren(frag);
+}
+render();
+if(db){
+  try{
+    onSnapshot(query(collection(db,"checkins"),orderBy("at","desc"),limit(60)),
+      snap=>{ latest=snap.docs.map(d=>d.data()); connEl.textContent="即時同步中"; connEl.classList.add("on"); render(); },
+      err=>{ connEl.textContent="同步中斷"; connEl.classList.remove("on"); });
+  }catch(e){ connEl.textContent="連線失敗"; }
+}else{ connEl.textContent=configured?"連線失敗":"未設定"; }
+setInterval(render,60000); /* 每分鐘重算「幾小時沒回報」 */
+</script>
+</body>
+</html>

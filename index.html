@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>山平安｜報平安</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏔️</text></svg>">
+<style>
+  :root{
+    --bg:#EFF3F1; --card:#FFFFFF; --ink:#22312E; --muted:#68776F;
+    --line:#DCE4E0; --brand:#2E6E63; --brand-ink:#FFFFFF; --brand-soft:#E2EEEA;
+    --ok:#2F8F5B; --ok-soft:#E3F2E9; --warn:#B4751C; --warn-soft:#F7ECD9;
+    --alert:#B9442F; --alert-soft:#F8E6E1; --chip:#EAEFEC;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0F1614; --card:#19231F; --ink:#E7EFEA; --muted:#92A29A;
+      --line:#2A3630; --brand:#5FB3A1; --brand-ink:#0F1614; --brand-soft:#1E312C;
+      --ok:#6FC392; --ok-soft:#1C2F24; --warn:#DBA34E; --warn-soft:#332A18;
+      --alert:#E07B64; --alert-soft:#36201B; --chip:#232E29;
+    }
+  }
+  *{box-sizing:border-box;}
+  html{height:100%;}
+  body{
+    margin:0; min-height:100%; background:var(--bg); color:var(--ink);
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;
+    font-size:18px; line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:560px; margin:0 auto; padding:20px 18px 48px;}
+  header.site{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:14px;}
+  .wordmark{font-family:"Songti TC","Noto Serif TC",serif; font-weight:900; font-size:30px; letter-spacing:.06em; margin:0;}
+  .wordmark small{display:block; font-weight:700; font-size:13px; color:var(--muted); letter-spacing:.12em; margin-top:2px;}
+  .conn{font-size:12px; color:var(--muted); padding:4px 10px; border:1px solid var(--line); border-radius:999px; white-space:nowrap;}
+  .conn.on{color:var(--ok); border-color:var(--ok);}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:16px; margin:12px 0;}
+  .today{display:flex; gap:12px; align-items:flex-start;}
+  .daynum{font-family:"Songti TC",serif; font-weight:900; font-size:34px; line-height:1; color:var(--brand); min-width:64px;}
+  .daynum em{display:block; font-style:normal; font-size:12px; font-weight:700; color:var(--muted); letter-spacing:.08em; margin-bottom:2px;}
+  .today h2{margin:0 0 2px; font-size:18px;}
+  .today p{margin:0; color:var(--muted); font-size:15px;}
+  .sig{display:inline-flex; align-items:center; gap:6px; font-size:14px; font-weight:600; border-radius:999px; padding:3px 10px; margin-top:8px;}
+  .sig.g{background:var(--ok-soft); color:var(--ok);}
+  .sig.y{background:var(--warn-soft); color:var(--warn);}
+  .sig.r{background:var(--alert-soft); color:var(--alert);}
+  .whorow{display:flex; gap:10px; margin-top:4px;}
+  .whochip{flex:1; border:2px solid var(--line); background:var(--card); color:var(--ink);
+    border-radius:14px; padding:14px; font-size:20px; font-weight:800; cursor:pointer;}
+  .whochip.sel{border-color:var(--brand); background:var(--brand-soft); color:var(--brand);}
+  .bigwrap{display:flex; flex-direction:column; align-items:center; padding:24px 0 8px;}
+  .bigbtn{
+    width:min(74vw,270px); aspect-ratio:1/1; border-radius:50%;
+    border:none; background:var(--brand); color:var(--brand-ink);
+    font-size:38px; font-weight:900; letter-spacing:.1em; cursor:pointer;
+    font-family:"Songti TC",serif;
+    box-shadow:0 10px 28px rgba(26,70,61,.28);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+  }
+  .bigbtn small{font-size:15px; font-weight:700; letter-spacing:.18em; opacity:.85;}
+  .bigbtn:active{transform:scale(.96);}
+  .bigbtn[disabled]{opacity:.75; cursor:default;}
+  .bigbtn.done{background:var(--ok);}
+  .notein{width:100%; border:1px solid var(--line); background:var(--card); color:var(--ink);
+    border-radius:12px; padding:14px; font-size:18px; margin-top:16px;}
+  .notein::placeholder{color:var(--muted);}
+  .ownlast{text-align:center; color:var(--muted); font-size:15px; margin-top:12px;}
+  .hint{color:var(--muted); font-size:14px; text-align:center; margin-top:12px;}
+  .banner{background:var(--alert-soft); color:var(--alert); border:1px solid var(--alert);
+    border-radius:14px; padding:12px 14px; font-size:14px; margin:12px 0;}
+  .toast{position:fixed; left:50%; transform:translateX(-50%);
+    bottom:calc(24px + env(safe-area-inset-bottom,0px));
+    background:var(--ink); color:var(--bg); font-size:15px; padding:11px 18px; border-radius:999px;
+    opacity:0; pointer-events:none; transition:opacity .2s; max-width:88vw; text-align:center;}
+  .toast.show{opacity:.96;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="site">
+    <h1 class="wordmark">山平安<small>川西行 10/17 – 11/01</small></h1>
+    <span class="conn" id="conn">連線中…</span>
+  </header>
+  <main id="app"></main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { firebaseConfig } from "./config.js";
+
+/* ── 行程資料 ── */
+const TRIP=[
+ {d:"2026-10-17",wd:"六",place:"抵達成都",stay:"機場旁酒店",alt:500, sig:"g"},
+ {d:"2026-10-18",wd:"日",place:"成都 → 上里古鎮 → 瀘定",stay:"瀘定",alt:1300,sig:"g"},
+ {d:"2026-10-19",wd:"一",place:"瀘定 → 新都橋 → 雅江",stay:"雅江・含氧房",alt:3300,sig:"y"},
+ {d:"2026-10-20",wd:"二",place:"進格聶神山景區",stay:"景區內・含氧房",alt:3800,sig:"r"},
+ {d:"2026-10-21",wd:"三",place:"格聶全天拍攝",stay:"景區內・含氧房",alt:3800,sig:"r"},
+ {d:"2026-10-22",wd:"四",place:"出山 → 香格里拉鎮",stay:"香格里拉鎮",alt:2900,sig:"g"},
+ {d:"2026-10-23",wd:"五",place:"進亞丁景區",stay:"亞丁村",alt:3900,sig:"y"},
+ {d:"2026-10-24",wd:"六",place:"亞丁景區徒步攝影",stay:"亞丁村",alt:3900,sig:"y"},
+ {d:"2026-10-25",wd:"日",place:"牛奶海、五色海徒步",stay:"亞丁村",alt:4600,sig:"y"},
+ {d:"2026-10-26",wd:"一",place:"下撤 → 新都橋",stay:"新都橋",alt:2560,sig:"g"},
+ {d:"2026-10-27",wd:"二",place:"子梅埡口看貢嘎日落",stay:"上木居・含氧房",alt:3600,sig:"r"},
+ {d:"2026-10-28",wd:"三",place:"冷噶措 → 瀘定",stay:"瀘定",alt:1330,sig:"g"},
+ {d:"2026-10-29",wd:"四",place:"牛背山山頂帳篷夜",stay:"山頂帳篷營地",alt:3666,sig:"r"},
+ {d:"2026-10-30",wd:"五",place:"牛背山日出 → 海螺溝",stay:"景區三號營地",alt:2900,sig:"y"},
+ {d:"2026-10-31",wd:"六",place:"海螺溝 → 回成都",stay:"成都酒店",alt:500, sig:"g"},
+ {d:"2026-11-01",wd:"日",place:"自由活動，下午送機",stay:"CX987 14:30 起飛",alt:500,sig:"g"}
+];
+const SIG_LABEL={g:"🟢 訊號正常日",y:"🟡 可能延遲日",r:"🔴 預期斷訊日（沒網路很正常）"};
+
+/* ── 小工具 ── */
+const $=s=>document.querySelector(s);
+const app=$("#app"), connEl=$("#conn"), toastEl=$("#toast");
+function toast(m){ toastEl.textContent=m; toastEl.classList.add("show");
+  clearTimeout(toast._t); toast._t=setTimeout(()=>toastEl.classList.remove("show"),2800); }
+function lsGet(k,fb){ try{const v=localStorage.getItem(k); return v==null?fb:JSON.parse(v);}catch(e){return fb;} }
+function lsSet(k,v){ try{localStorage.setItem(k,JSON.stringify(v));}catch(e){} }
+function chinaToday(){ try{return new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Shanghai"}).format(new Date());}
+  catch(e){return new Date().toISOString().slice(0,10);} }
+function fmtTime(ms){ try{return new Intl.DateTimeFormat("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date(ms));}catch(e){return new Date(ms).toLocaleString();} }
+function el(t,c,x){ const n=document.createElement(t); if(c)n.className=c; if(x!=null)n.textContent=x; return n; }
+
+/* ── Firebase ── */
+let db=null;
+const configured=firebaseConfig && firebaseConfig.apiKey && !String(firebaseConfig.apiKey).includes("貼上");
+if(configured){ try{ db=getFirestore(initializeApp(firebaseConfig)); }catch(e){ db=null; } }
+function setConn(){
+  const p=lsGet("sp_queue",[]).length;
+  if(db&&navigator.onLine){ connEl.textContent=p?("待補傳 "+p+" 筆"):"連線正常"; connEl.classList.add("on"); }
+  else { connEl.textContent="目前離線・會先存著"; connEl.classList.remove("on"); }
+}
+async function flushQueue(){
+  if(!db) return;
+  let q=lsGet("sp_queue",[]);
+  while(q.length){
+    try{ await addDoc(collection(db,"checkins"),q[0]); q.shift(); lsSet("sp_queue",q); }
+    catch(e){ break; }
+  }
+  setConn();
+}
+window.addEventListener("online",flushQueue);
+window.addEventListener("offline",setConn);
+
+/* ── 畫面 ── */
+let who=lsGet("sp_who",null);
+function todayCard(){
+  const t=chinaToday(), c=el("div","card");
+  const idx=TRIP.findIndex(x=>x.d===t);
+  if(t<TRIP[0].d){ c.append(el("h2",null,"行程還沒開始"),el("p",null,"10/17 成都見！")); return c; }
+  if(idx===-1){ c.append(el("h2",null,"行程結束，歡迎回家 🎉")); return c; }
+  const d=TRIP[idx], row=el("div","today");
+  const num=el("div","daynum"); num.append(el("em",null,"DAY"),document.createTextNode(String(idx+1)));
+  const tt=el("div");
+  tt.append(el("h2",null,d.place));
+  tt.append(el("p",null,d.d.slice(5).replace("-","/")+"（"+d.wd+"）・宿 "+d.stay+"・海拔 "+d.alt+"m"));
+  tt.append(el("span","sig "+d.sig,SIG_LABEL[d.sig]));
+  row.append(num,tt); c.append(row); return c;
+}
+function render(){
+  const frag=document.createDocumentFragment();
+  if(!configured) frag.append(Object.assign(el("div","banner","⚠️ 還沒設定 config.js——請照 SETUP.md 步驟 2 貼上 Firebase 設定。")));
+  frag.append(todayCard());
+  const pick=el("div","card");
+  pick.append(el("p",null,"我是——"));
+  const row=el("div","whorow");
+  ["爸爸","媽媽"].forEach(r=>{
+    const b=el("button","whochip"+(who===r?" sel":""),r);
+    b.addEventListener("click",()=>{ who=r; lsSet("sp_who",r); render(); });
+    row.append(b);
+  });
+  pick.append(row); frag.append(pick);
+  const wrap=el("div","bigwrap");
+  const noteIn=el("input","notein"); noteIn.placeholder="想說的話（可不填）"; noteIn.maxLength=120;
+  const btn=el("button","bigbtn"); btn.append(el("span",null,"我平安"),el("small",null,"按一下就好"));
+  btn.addEventListener("click",()=>doCheckin(btn,noteIn));
+  wrap.append(btn,noteIn); frag.append(wrap);
+  const mine=lsGet("sp_last",null);
+  frag.append(el("p","ownlast",mine?("上次回報："+fmtTime(mine)):"今天還沒回報喔"));
+  frag.append(el("p","hint","按下去如果問「要不要分享位置」，請按「允許」，女兒才看得到你們在哪裡。山上沒訊號也沒關係，會先存著，連上網自動送出。"));
+  app.replaceChildren(frag);
+  setConn();
+}
+async function doCheckin(btn,noteIn){
+  if(btn.disabled) return;
+  if(!who){ toast("先選一下你是爸爸還是媽媽喔"); return; }
+  btn.disabled=true; btn.firstChild.textContent="定位中…";
+  let pos=null;
+  try{
+    pos=await new Promise(res=>{
+      if(!navigator.geolocation) return res(null);
+      navigator.geolocation.getCurrentPosition(p=>res(p),()=>res(null),{timeout:8000,maximumAge:60000});
+    });
+  }catch(e){}
+  btn.firstChild.textContent="回報中…";
+  const rec={who, at:Date.now(), day:chinaToday(), note:(noteIn.value||"").trim().slice(0,120)};
+  if(pos&&pos.coords){ rec.lat=+pos.coords.latitude.toFixed(5); rec.lng=+pos.coords.longitude.toFixed(5); }
+  let saved=false;
+  if(db&&navigator.onLine){ try{ await addDoc(collection(db,"checkins"),rec); saved=true; }catch(e){} }
+  if(!saved){ const q=lsGet("sp_queue",[]); q.push(rec); lsSet("sp_queue",q); }
+  lsSet("sp_last",rec.at); noteIn.value="";
+  btn.classList.add("done"); btn.firstChild.textContent="已回報 ✓";
+  toast(saved?"平安送出去了！":"目前沒網路，已先存著，連上網會自動送出");
+  setTimeout(()=>{ btn.classList.remove("done"); btn.firstChild.textContent="我平安"; btn.disabled=false; render(); },2200);
+}
+render();
+flushQueue();
+</script>
+</body>
+</html>
