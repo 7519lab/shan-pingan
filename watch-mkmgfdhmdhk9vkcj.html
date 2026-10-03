@@ -87,7 +87,9 @@ import { getFirestore, collection, query, orderBy, limit, onSnapshot } from "htt
 import { firebaseConfig } from "./config.js";
 
 const TRIP=[
- {d:"2026-10-17",wd:"六",place:"抵達成都",stay:"機場旁酒店",alt:500, sig:"g",note:"落地＋到飯店各報一次"},
+ {d:"2026-10-15",wd:"四",place:"晚間抵達成都（雙流 21:55）",stay:"自訂飯店",alt:500,sig:"g",note:"落地報一次平安"},
+ {d:"2026-10-16",wd:"五",place:"成都自由行",stay:"自訂飯店",alt:500,sig:"g",note:""},
+ {d:"2026-10-17",wd:"六",place:"成都自由行，傍晚與團會合",stay:"天府機場旁酒店",alt:500,sig:"g",note:"跟團開始"},
  {d:"2026-10-18",wd:"日",place:"成都 → 上里古鎮 → 瀘定",stay:"瀘定",alt:1300,sig:"g",note:""},
  {d:"2026-10-19",wd:"一",place:"瀘定 → 新都橋 → 雅江",stay:"雅江・含氧房",alt:3300,sig:"y",note:"單日爬升 2000m，高山症好發日"},
  {d:"2026-10-20",wd:"二",place:"進格聶神山景區",stay:"景區內・含氧房",alt:3800,sig:"r",note:"偏遠山區，斷訊正常"},
@@ -101,8 +103,8 @@ const TRIP=[
  {d:"2026-10-28",wd:"三",place:"冷噶措 → 瀘定",stay:"瀘定",alt:1330,sig:"g",note:""},
  {d:"2026-10-29",wd:"四",place:"牛背山山頂帳篷夜",stay:"山頂帳篷營地",alt:3666,sig:"r",note:"山頂訊號看天吃飯"},
  {d:"2026-10-30",wd:"五",place:"牛背山日出 → 海螺溝",stay:"景區三號營地",alt:2900,sig:"y",note:"泡溫泉日"},
- {d:"2026-10-31",wd:"六",place:"海螺溝 → 回成都",stay:"成都酒店",alt:500, sig:"g",note:"平安下山"},
- {d:"2026-11-01",wd:"日",place:"自由活動，下午送機",stay:"CX987 14:30 起飛",alt:500,sig:"g",note:"回家！"}
+ {d:"2026-10-31",wd:"六",place:"海螺溝 → 回成都",stay:"成都酒店",alt:500,sig:"g",note:"平安下山"},
+ {d:"2026-11-01",wd:"日",place:"下午送機",stay:"CX987 14:40 起飛，20:10 抵桃園",alt:500,sig:"g",note:"回家！"}
 ];
 const SIG_LABEL={g:"🟢 訊號正常日",y:"🟡 可能延遲日",r:"🔴 預期斷訊日"};
 const SIG_HOURS={g:24,y:36,r:null};
